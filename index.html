@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>متجر البيض الطازج</title>
+<link rel="stylesheet" href="assets/bootstrap/bootstrap.min.css"><link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+        <!-- 0. الصفحة الرئيسية (واجهة الزبون) -->
+        <section id="homeView" class="tab-view active">
+            <div class="home-view-wrap">
+            <div class="card dashboard-card">
+                <h1 class="page-title">🥚 متجر البيض الطازج</h1>
+                <p class="muted-text">أفضل جودة وأنسب أسعار - اطلب طبقك الآن ويصلك حتى باب البيت</p>
+            </div>
+
+            <!-- أسعار البيض اليوم -->
+            <div class="price-section">
+                <div class="demo-section-head"><div><span class="demo-kicker">منتجاتنا</span><h2 class="subsection-title">أسعار اليوم</h2></div><span class="demo-note">الطبق = 30 بيضة</span></div>
+                                <div class="price-grid">
+                    <div class="price-card">
+                        <span class="size-tag">الأكثر طلبًا</span>
+                        <img class="egg-size-image" src="assets/eggs/large.svg" alt="بيض كبير">
+                        <h3>بيض كبير</h3>
+                        <div class="price"><span id="priceLargeDisplay">0</span> ج.م</div>
+                    </div>
+                    <div class="price-card">
+                        <img class="egg-size-image" src="assets/eggs/medium.svg" alt="بيض وسط">
+                        <h3>بيض وسط</h3>
+                        <div class="price"><span id="priceMediumDisplay">0</span> ج.م</div>
+                    </div>
+                    <div class="price-card">
+                        <img class="egg-size-image" src="assets/eggs/small.svg" alt="بيض صغير">
+                        <h3>بيض صغير</h3>
+                        <div class="price"><span id="priceSmallDisplay">0</span> ج.م</div>
+                    </div>
+                    <div class="price-card">
+                        <img class="egg-size-image" src="assets/eggs/large.svg" alt="بيض أحمر كبير">
+                        <h3>بيض أحمر كبير</h3>
+                        <div class="price"><span id="priceRedLargeDisplay">0</span> ج.م</div>
+                    </div>
+                    <div class="price-card">
+                        <img class="egg-size-image" src="assets/eggs/large.svg" alt="بيض أبيض كبير">
+                        <h3>بيض أبيض كبير</h3>
+                        <div class="price"><span id="priceWhiteLargeDisplay">0</span> ج.م</div>
+                    </div>
+                    <div class="price-card">
+                        <img class="egg-size-image" src="assets/eggs/small.svg" alt="بيض بشاير">
+                        <h3>بيض بشاير صغير بلدي</h3>
+                        <div class="price"><span id="priceBashayerDisplay">0</span> ج.م</div>
+                    </div>
+                </div>
+</div>
+
+            <!-- نموذج الطلب أونلاين -->
+            <div class="card order-form-card">
+                <h2 class="card-title">📝 استمارة طلب جديد</h2>
+                <form onsubmit="submitOnlineOrder(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>الاسم بالكامل:</label>
+                            <input type="text" id="orderName" placeholder="أدخل اسمك" required>
+                        </div>
+                        <div class="form-group">
+                            <label>رقم الهاتف / الواتساب:</label>
+                            <input type="tel" id="orderPhone" placeholder="01xxxxxxxx" required>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>نوع البيض:</label>
+                            <select id="orderType" onchange="calcOnlineOrder()" required>
+                                <option value="large">بيض كبير</option>
+                                <option value="medium">بيض وسط</option>
+                                <option value="small">بيض صغير</option>
+                                <option value="red_large">بيض أحمر كبير</option>
+                                <option value="white_large">بيض أبيض كبير</option>
+                                <option value="bashayer">بيض بشاير صغير بلدي</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>عدد الأطباق:</label>
+                            <input type="number" id="orderTrays" min="1" oninput="calcOnlineOrder()" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>العنوان بالتفصيل:</label>
+                        <textarea id="orderAddress" rows="2" placeholder="أدخل عنوان التوصيل" required></textarea>
+                    </div>
+
+                    <div class="calc-box">
+                        <span>إجمالي المبلغ المطلوب:</span>
+                        <span id="orderTotalDisplay" class="span-custom">0 ج.م</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">تاكيد إرسال الطلب 🚚</button>
+                </form>
+            </div>
+            </div>
+        </section>
+
+
+<script src="assets/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="js/customer.js" type="module"></script>
+</body></html>

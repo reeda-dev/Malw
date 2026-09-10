@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر البيض - الطلب المباشر والأسعار</title>
+    
+<link rel="stylesheet" href="../assets/bootstrap/bootstrap.min.css">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <!-- Mobile Navigation Bar (Admin Only) -->
+    <div class="mobile-bar">
+        <div class="brand">🥚 لوحة التحكم</div>
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    </div>
+
+    <!-- Sidebar (Admin Only) -->
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">🥚 إدارة المتجر</div>
+        <ul class="nav-menu">
+            <li><a class="nav-btn active" href="../">🌐 واجهة الزبون</a></li>
+            <li><button class="nav-btn" onclick="switchTab('ordersView', this)">📥 طلبات الموقع</button></li>
+            <li><button class="nav-btn" onclick="switchTab('setPricesView', this)">🏷️ أسعار اليوم</button></li>
+            <li><button class="nav-btn" onclick="switchTab('sales', this)">🛒 فاتورة بيع</button></li>
+            <li><button class="nav-btn" onclick="switchTab('returns', this)">↩️ تسجيل مرتجع</button></li>
+            <li><button class="nav-btn" onclick="switchTab('purchases', this)">📦 شراء من مزرعة</button></li>
+            <li><button class="nav-btn" onclick="switchTab('suppliers', this)">🏭 المزارع / الموردين</button></li>
+            <li><button class="nav-btn" onclick="switchTab('customers', this)">👥 الزبائن والديون</button></li>
+            <li><button class="nav-btn" onclick="switchTab('statement', this)">📜 كشف حساب زبون</button></li>
+            <li><button class="nav-btn" onclick="switchTab('supplierStatement', this)">🏭 كشف حساب مزرعة</button></li>
+            <li><button class="nav-btn" onclick="switchTab('wastage', this)">⚠️ تسجيل كسر</button></li>
+            <li><button class="nav-btn" onclick="switchTab('inventory', this)">📊 حركة المخزن</button></li>
+
+        </ul>
+    </aside>
+
+    <div class="main">
+        <!-- Main Top Bar -->
+        <header class="header header-custom" id="adminHeader">
+            <h1 class="section-title">لوحة الإدارة والمبيعات</h1>
+            <div class="admin-top-summary">
+                <div class="stock-badge">المخزون: <span id="stockDisplay">0</span> طبق</div>
+                <div class="prices-badge">
+                    <span>كبير: <b id="hdrPriceLarge">0</b></span>
+                    <span>وسط: <b id="hdrPriceMedium">0</b></span>
+                    <span>صغير: <b id="hdrPriceSmall">0</b></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 0.1 لوحة إدارة طلبات الموقع (Admin) -->
+        <section id="ordersView" class="tab-view active">
+            <div class="card table-card">
+                <h2 class="card-title">📥 الطلبات القادمة من الموقع</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>م</th>
+                            <th>التاريخ</th>
+                            <th>الاسم</th>
+                            <th>الهاتف</th>
+                            <th>النوع والكمية</th>
+                            <th>العنوان</th>
+                            <th>الإجمالي</th>
+                            <th>الحالة</th>
+                            <th>إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTable"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 0.2 شاشة تغيير الأسعار (Admin) -->
+        <section id="setPricesView" class="tab-view">
+            <div class="card">
+                <h2 class="card-title">🏷️ تحديث أسعار البيض اليومية</h2>
+                <form onsubmit="updatePrices(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>بيض كبير (ج.م):</label>
+                            <input type="number" id="setPriceLarge" required>
+                        </div>
+                        <div class="form-group">
+                            <label>بيض وسط (ج.م):</label>
+                            <input type="number" id="setPriceMedium" required>
+                        </div>
+                        <div class="form-group">
+                            <label>بيض صغير (ج.م):</label>
+                            <input type="number" id="setPriceSmall" required>
+                        </div>
+                        <div class="form-group">
+                            <label>بيض أحمر كبير (ج.م):</label>
+                            <input type="number" id="setPriceRedLarge" required>
+                        </div>
+                        <div class="form-group">
+                            <label>بيض أبيض كبير (ج.م):</label>
+                            <input type="number" id="setPriceWhiteLarge" required>
+                        </div>
+                        <div class="form-group">
+                            <label>بيض بشاير صغير بلدي (ج.م):</label>
+                            <input type="number" id="setPriceBashayer" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">حفظ الأسعار الجديدة</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 1. شاشة البيع المباشر -->
+        <section id="sales" class="tab-view">
+            <div class="card">
+                <h2 class="card-title">إصدار فاتورة بيع لزبون</h2>
+                <form onsubmit="addSale(event)">
+                    <div class="form-group full-width">
+                        <label>اختر أو اكتب اسم الزبون:</label>
+                        <input type="text" id="saleCustomerInput" list="saleCustomerList" placeholder="ابحث باسم الزبون..." required>
+                        <datalist id="saleCustomerList"></datalist>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>عدد الأطباق:</label>
+                            <input type="number" id="saleTrays" min="1" required oninput="calcSale()">
+                        </div>
+                        <div class="form-group">
+                            <label>سعر الطبق (ج.م):</label>
+                            <input type="number" id="salePrice" min="1" required oninput="calcSale()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>المبلغ المدفوع كاش:</label>
+                        <input type="number" id="salePaid" min="0" oninput="calcSale()">
+                    </div>
+                    <div class="calc-box">
+                        <span>الإجمالي: <span id="saleTotal" class="span-custom-1">0</span> ج.م</span>
+                        <span>المتبقي (دين): <span id="saleRemaining" class="span-custom-2">0</span> ج.م</span>
+                    </div>
+                    <button type="submit" class="btn btn-success">حفظ الفاتورة وترحيل الحسابات</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 2. شاشة المرتجعات -->
+        <section id="returns" class="tab-view">
+            <div class="card">
+                <h2 class="card-title">↩️ تسجيل مرتجع من فاتورة</h2>
+                <form onsubmit="addReturn(event)">
+                    <div class="form-group">
+                        <label>الزبون:</label>
+                        <div style="position:relative;">
+                            <input type="text" id="returnCustomerInput" placeholder="ابحث باسم الزبون..." autocomplete="off" required oninput="handleReturnCustomerInput()" onfocus="renderReturnCustomerResults()">
+                            <div id="returnCustomerResults" style="display:none;position:absolute;z-index:1000;top:100%;right:0;left:0;max-height:220px;overflow-y:auto;background:#fff;border:1px solid #d1d5db;border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,.12);"></div>
+                        </div>
+                        <input type="hidden" id="returnCustomer">
+                    </div>
+                    <div class="form-group">
+                        <label>الفاتورة:</label>
+                        <select id="returnSale" required onchange="updateReturnPreview()">
+                            <option value="">اختر الزبون أولاً</option>
+                        </select>
+                    </div>
+                    <div id="returnInfo" class="return-info">اختر الفاتورة لعرض الكمية المتاحة والسعر.</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>الكمية المرتجعة:</label>
+                            <input type="number" id="returnTrays" min="1" required oninput="updateReturnPreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>قيمة المرتجع:</label>
+                            <div class="calc-box return-value-box"><span id="returnValue">0</span> ج.م</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>سبب المرتجع:</label>
+                        <textarea id="returnReason" rows="2" placeholder="اختياري"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-warning">تأكيد المرتجع وإرجاعه للمخزن</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 3. شاشة المشتريات -->
+        <section id="purchases" class="tab-view">
+            <div class="card">
+                <h2 class="card-title">إدخال شحنة جديدة من مزرعة</h2>
+                <form onsubmit="addPurchase(event)">
+                    <div class="form-group">
+                        <label>صاحب المزرعة / المورد:</label>
+                        <div class="search-select-wrap">
+                            <input type="text" id="purchaseSupplierInput" autocomplete="off"
+                                placeholder="🔎 اكتب اسم صاحب المزرعة للبحث..."
+                                oninput="searchPurchaseSupplier()" onfocus="searchPurchaseSupplier()" required>
+                            <input type="hidden" id="purchaseSupplier">
+                            <div id="purchaseSupplierResults" class="search-results"></div>
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>عدد الأطباق المشتراة:</label>
+                            <input type="number" id="purTrays" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>سعر الطبق:</label>
+                            <input type="number" id="purPrice" min="0.01" step="0.01" placeholder="مثال: 150" required>
+                        </div>
+                        <div class="form-group">
+                            <label>المدفوع الآن (ج.م):</label>
+                            <input type="number" id="purPaid" min="0" step="0.01" value="0" oninput="calcPurchase()">
+                        </div>
+                        <div class="form-group">
+                            <label>المتبقي للمورد:</label>
+                            <div class="calc-box" style="margin:0"><span id="purchaseRemainingDisplay">0</span> ج.م</div>
+                        </div>
+                    </div>
+                    <div class="calc-box">
+                        <span>إجمالي قيمة الشراء: <b id="purchaseTotalDisplay">0</b> ج.م</span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">إضافة للمخزن</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 3. إدارة الزبائن -->
+        <!-- المزارع / الموردين -->
+        <section id="suppliers" class="tab-view">
+            <div class="card">
+                <h2 class="card-title">🏭 إضافة مزرعة / مورد جديد</h2>
+                <form onsubmit="addSupplier(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>اسم صاحب المزرعة:</label>
+                            <input type="text" id="supplierName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>رقم الهاتف:</label>
+                            <input type="text" id="supplierPhone">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">حفظ المورد</button>
+                </form>
+            </div>
+
+            <div class="card table-card">
+                <div class="section-toolbar">
+                    <h2 class="card-title">قائمة المزارع / الموردين</h2>
+                    <input type="text" id="supplierSearch" placeholder="🔎 ابحث باسم المورد أو الهاتف..." oninput="filterSuppliers()">
+                </div>
+                <table>
+                    <thead>
+                        <tr><th>م</th><th>المورد</th><th>الهاتف</th><th>المتبقي له</th><th>إجراء</th></tr>
+                    </thead>
+                    <tbody id="suppliersTable"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="customers" class="tab-view">
+            <div class="card add-customer-card">
+                <h2 class="card-title">إضافة زبون جديد</h2>
+                <form onsubmit="addCustomer(event)" class="add-customer-form">
+                    <div class="form-grid add-customer-grid">
+                        <div class="form-group">
+                            <label>اسم الزبون:</label>
+                            <input type="text" id="custName" placeholder="" required>
+                        </div>
+                        <div class="form-group">
+                            <label>الهاتف:</label>
+                            <input type="text" id="custPhone" placeholder="">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-save-customer">حفظ الزبون</button>
+                </form>
+            </div>
+            <div class="debt-total-card">
+                <span>💰 إجمالي الديون عند كل الزبائن (من البداية)</span>
+                <strong id="totalCustomerDebt">0 ج.م</strong>
+            </div>
+            <div class="period-filter-card no-print">
+                <div class="period-filter-title">إجمالي ديون من تاريخ</div>
+                <div class="period-date-row">
+                    <input type="date" id="customersDebtFromDate" class="period-date-input" onchange="updatePeriodCustomerDebtTotal()">
+                    <span class="period-date-hint">إلى الآن</span>
+                    <button type="button" class="period-btn" onclick="clearCustomersDebtDate()">عرض الكل</button>
+                </div>
+                <strong id="periodCustomerDebtTotal" class="period-debt-value">0 ج.م</strong>
+            </div>
+            <div class="card table-card">
+                <div class="div-custom-3">
+                    <h2 class="card-title h2-custom">قائمة الزبائن والديون</h2>
+                    <input type="text" id="customerSearch" placeholder="🔎 ابحث باسم الزبون أو الهاتف..." oninput="filterCustomers()" class="input-custom">
+                </div>
+                <table>
+                    <thead><tr><th>م</th><th>الاسم</th><th>الهاتف</th><th>الديون المستحقة</th><th>تحصيل</th><th>تعديل</th></tr></thead>
+                    <tbody id="customersTable"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 4. كشف حساب -->
+        <section id="statement" class="tab-view">
+            <div class="card table-card">
+                <div class="no-print div-custom-4">
+                    <div class="div-custom-5">
+                        <input id="statementSearch" autocomplete="off" placeholder="🔎 اكتب اسم الزبون أو رقم الهاتف..." class="input-custom-6">
+                        <div id="statementSearchResults" class="div-custom-7"></div>
+                    </div>
+                    <div class="period-date-row statement-period-btns">
+                        <label class="period-date-label">من تاريخ</label>
+                        <input type="date" id="statementFromDate" class="period-date-input" onchange="onStatementDateChange()">
+                        <span class="period-date-hint">إلى الآن</span>
+                        <button type="button" class="period-btn" onclick="clearStatementDate()">عرض الكل</button>
+                    </div>
+                    <div class="statement-actions">
+                        <button onclick="window.print()" class="btn btn-primary button-custom">🖨️ طباعة</button>
+                    </div>
+                </div>
+                <div id="printArea">
+                    <h2 class="card-title" id="custStatementTitle">كشف حساب</h2>
+                    <div id="statementSummary" class="statement-summary"></div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>التاريخ</th>
+                                <th>النوع</th>
+                                <th>الكمية</th>
+                                <th>سعر الطبق</th>
+                                <th>الإجمالي</th>
+                                <th>المدفوع</th>
+                                <th>المتبقي من المبايعة</th>
+                                <th>إجمالي المتبقي</th>
+                            </tr>
+                        </thead>
+                        <tbody id="statementTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. حركة المخزن -->
+
+        <!-- كشف حساب مزرعة / مورد -->
+        <section id="supplierStatement" class="tab-view">
+            <div class="card table-card">
+                <div class="no-print div-custom-4">
+                    <div class="div-custom-5" style="position:relative;">
+                        <input id="supplierStatementSearch" autocomplete="off" placeholder="🔎 اكتب اسم المورد أو الهاتف..." class="input-custom-6" oninput="searchSupplierStatement()" onfocus="renderSupplierStatementSearchResults()">
+                        <div id="supplierStatementSearchResults" class="div-custom-7 search-results"></div>
+                    </div>
+                    <div class="period-date-row statement-period-btns">
+                        <label class="period-date-label">من تاريخ</label>
+                        <input type="date" id="supplierStatementFromDate" class="period-date-input" onchange="onSupplierStatementDateChange()">
+                        <span class="period-date-hint">إلى الآن</span>
+                        <button type="button" class="period-btn" onclick="clearSupplierStatementDate()">عرض الكل</button>
+                    </div>
+                </div>
+                <h2 class="card-title" id="supplierStatementTitle">كشف حساب مزرعة / مورد</h2>
+                <div id="supplierStatementSummary" class="statement-summary"></div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>النوع</th>
+                            <th>الكمية</th>
+                            <th>الإجمالي</th>
+                            <th>المدفوع</th>
+                            <th>المتبقي من العملية</th>
+                            <th>إجمالي المتبقي</th>
+                        </tr>
+                    </thead>
+                    <tbody id="supplierStatementTable"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="inventory" class="tab-view">
+            <div class="card">
+                <div class="section-toolbar inventory-toolbar">
+                    <h2 class="card-title">📊 حركة المخزن</h2>
+                    <div class="period-date-row inventory-date-filter no-print">
+                        <label class="period-date-label">من تاريخ</label>
+                        <input type="date" id="inventoryFromDate" class="period-date-input" onchange="onInventoryDateChange()">
+                        <span class="period-date-hint">إلى الآن</span>
+                        <button type="button" class="period-btn" onclick="clearInventoryDate()">عرض الكل / بعد إعادة الإدارة</button>
+                    </div>
+                    <button type="button" class="btn btn-danger inventory-reset-btn" onclick="resetInventoryStats()">🔄 اعادة الإدارة</button>
+                </div>
+                <div class="inventory-stats">
+                    <div class="inv-stat inv-stat-in">
+                        <span class="inv-stat-label">إجمالي الداخل</span>
+                        <span class="inv-stat-value"><b id="inventoryIn">0</b> طبق</span>
+                    </div>
+                    <div class="inv-stat inv-stat-purchase">
+                        <span class="inv-stat-label">الشراء من المزرعة</span>
+                        <span class="inv-stat-value"><b id="inventoryPurchaseMoney">0</b> ج.م</span>
+                    </div>
+                    <div class="inv-stat inv-stat-sales-money">
+                        <span class="inv-stat-label">مبيعات (أموال)</span>
+                        <span class="inv-stat-value"><b id="inventoryMoneyIn">0</b> ج.م</span>
+                    </div>
+                    <div class="inv-stat inv-stat-sold">
+                        <span class="inv-stat-label">إجمالي المبيعات</span>
+                        <span class="inv-stat-value"><b id="inventorySold">0</b> طبق</span>
+                    </div>
+                    <div class="inv-stat inv-stat-waste">
+                        <span class="inv-stat-label">إجمالي التالف</span>
+                        <span class="inv-stat-value"><b id="inventoryWasted">0</b> طبق</span>
+                    </div>
+                    <div class="inv-stat inv-stat-return">
+                        <span class="inv-stat-label">إجمالي المرتجعات</span>
+                        <span class="inv-stat-value"><b id="inventoryReturned">0</b> طبق</span>
+                        <span class="inv-stat-sub"><b id="inventoryReturnedMoney">0</b> ج.م</span>
+                    </div>
+                    <div class="inv-stat inv-stat-stock">
+                        <span class="inv-stat-label">المتبقي في المخزن</span>
+                        <span class="inv-stat-value"><b id="inventoryRemaining">0</b> طبق</span>
+                    </div>
+                </div>
+                <p class="p-custom">كل حركة بيع مرتبطة بالزبون، لذلك يمكنك معرفة من استلم الكمية حتى بعد نفاد المخزن.</p>
+                <div class="table-card div-custom-9">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>التاريخ</th>
+                                <th>نوع الحركة</th>
+                                <th>الكمية</th>
+                                <th>الزبون / المصدر</th>
+                                <th>السعر</th>
+                                <th>الإجمالي</th>
+                                <th>السبب / التفاصيل</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. الكسر والتوالف -->
+        <section id="wastage" class="tab-view">
+            <div class="card">
+                <h2 class="card-title">تسجيل توالف / كسر بيض</h2>
+                <form onsubmit="addWastage(event)">
+                    <div class="form-group"><label>عدد الأطباق التالفة:</label><input type="number" id="wasteTrays" min="1" required></div>
+                    <div class="form-group"><label>السبب:</label><textarea id="wasteReason" rows="2"></textarea></div>
+                    <button type="submit" class="btn btn-danger">خصم من المخزن</button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    
+<script src="../assets/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="../js/app-admin.js" type="module"></script>
+</body>
+</html>

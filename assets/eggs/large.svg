@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220">
+<rect width="360" height="220" rx="24" fill="#f8fafc"/>
+<g stroke="#c7b99f" stroke-width="3" fill="#d8cbb4"><path d="M45 126h270l-18 58H63z"/><path d="M54 126h252v20H54z" fill="#bcae95"/></g>
+<g fill="#ead7c4" stroke="#b98f6c" stroke-width="3">
+<ellipse cx="83" cy="105" rx="27" ry="38"/><ellipse cx="137" cy="99" rx="29" ry="41"/><ellipse cx="194" cy="99" rx="29" ry="41"/><ellipse cx="250" cy="105" rx="27" ry="38"/>
+<ellipse cx="111" cy="126" rx="27" ry="38"/><ellipse cx="168" cy="126" rx="29" ry="41"/><ellipse cx="224" cy="126" rx="29" ry="41"/><ellipse cx="278" cy="126" rx="27" ry="38"/>
+</g><text x="180" y="32" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#1e293b">بيض كبير</text>
+</svg>
