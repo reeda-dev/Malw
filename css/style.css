@@ -884,3 +884,36 @@ tr:hover td { background: #f8fafc; }
 .inv-stat-sub b {
   font-size: 15px;
 }
+
+
+
+.site-footer {
+  margin-top: 40px;
+  padding: 10px 16px;
+  text-align: center;
+  border-top: 1px solid #e2e8f0;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  background-color: rgb(24, 24, 24,0.7);
+}
+
+.site-footer p {
+  margin: 5px 0;
+}
+
+.whatsapp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ecfdf5;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.whatsapp-btn:hover {
+  transform: scale(1.08);
+  background: #d1fae5;
+}
